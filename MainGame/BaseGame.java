@@ -5,7 +5,7 @@ public class BaseGame {
     public static void main(String[] args){
         JFrame window = new JFrame("Game");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        window.setSize(400,400);
+        window.setSize(900,600);
         GamePanle gamePanle = new GamePanle();
         gamePanle.startGameThread();
         window.add(gamePanle);

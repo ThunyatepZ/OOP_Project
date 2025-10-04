@@ -13,20 +13,20 @@ public class Player extends Human {
     // 0=up, 1=down, 2=left, 3=right
     int facing = 0;
 
-    public Player(GamePanle gp, KeyEventHandler keyH){
+    public Player(GamePanle gp, KeyEventHandler keyH) {
         this.gp = gp;
         this.keyH = keyH;
         setDefaultValues();
-        Current_weapon = new Weapon("Pistol", 10, 5);
+        this.Current_weapon = new Weapon("Pistol", 10, 5);
     }
 
-    public void setDefaultValues(){
+    public void setDefaultValues() {
         x = 100;
         y = 100;
         speed = 4;
     }
 
-    public void update(){
+    public void update() {
         if (keyH.upPressed == 1 && (y - speed) >= 0) {
             y -= speed; facing = 0;
         }
@@ -40,6 +40,7 @@ public class Player extends Human {
             x += speed; facing = 3;
         }
 
+        // ยิงกระสุนตามทิศที่หัน
         if (keyH.spacePressed == 1) {
             int cx = x + gp.titlesize / 2;
             int cy = y + gp.titlesize / 2;
@@ -47,16 +48,17 @@ public class Player extends Human {
             int bs = Current_weapon.bulletSpeed;
             int dx = 0, dy = 0;
             if (facing == 0) dy = -bs;
-            else if (facing == 1) dy =  bs;
+            else if (facing == 1) dy = bs;
             else if (facing == 2) dx = -bs;
-            else if (facing == 3) dx =  bs;
+            else if (facing == 3) dx = bs;
 
-            gp.NPistol = new pistol(gp, cx, cy, Current_weapon.bulletSpeed, Current_weapon.damage, dx, dy);
+            gp.shootFromPlayer(cx, cy, dx, dy); // ยิงจริง
+
             keyH.spacePressed = 0;
         }
     }
 
-    public void draw(java.awt.Graphics2D g2){
+    public void draw(java.awt.Graphics2D g2) {
         g2.setColor(Color.white);
         g2.fillRect(x, y, gp.titlesize, gp.titlesize);
     }

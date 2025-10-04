@@ -8,6 +8,7 @@ import MainGame.GamePanle;
 public class Enemy extends Human {
     GamePanle gp;
     Player target;
+    public boolean alive = true;
 
     public Enemy(GamePanle gp, Player target) {
         this.gp = gp;
@@ -16,11 +17,10 @@ public class Enemy extends Human {
     }
 
     public void setDefaultValues() {
-        x = 200;
-        y = 200;
+        x = 500;
+        y = 500;
         speed = 1;
     }
-
     public void update() {
         int r = gp.titlesize;
 
