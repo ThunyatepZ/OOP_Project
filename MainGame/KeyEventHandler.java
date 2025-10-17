@@ -37,7 +37,12 @@ public class KeyEventHandler implements KeyListener{
         }
 
         if (ASCII == KeyEvent.VK_P)   tabPressed = 1;    // ← เพิ่ม
-        if (ASCII == KeyEvent.VK_ENTER) enterPressed = 1;  // ← เพิ่ม
+        
+        if(ASCII == KeyEvent.VK_1){
+            wep1 = 1;
+        }
+
+        // if (ASCII == KeyEvent.VK_ENTER) enterPressed = 1;  // ← เพิ่ม
     }
 
     @Override
@@ -63,7 +68,7 @@ public class KeyEventHandler implements KeyListener{
             spacePressed = 0;
         }
         if (ASCII == KeyEvent.VK_P)   tabPressed = 0;;     // ← เพิ่ม
-        if (ASCII == KeyEvent.VK_ENTER) enterPressed = 0;   // ← เพิ่ม
+        // if (ASCII == KeyEvent.VK_ENTER) enterPressed = 0;   // ← เพิ่ม
         
     }
 }

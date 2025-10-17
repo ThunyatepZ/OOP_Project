@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle; // ✅ ใช้เช็กชน
+import java.awt.Rectangle;
 
 import javax.swing.JPanel;
 
@@ -14,27 +14,31 @@ import Entity.sideEnemy;
 import tile.Tilemanager;
 
 public class GamePanle extends JPanel implements Runnable {
+    // ---- หน้าจอ ----
     final int OriginalTitlesize = 16;
     final int scale = 3;
     public int titlesize = OriginalTitlesize * scale;
-    final int maxRow = 16;
-    final int maxCol = 12;
-    final int Widthscreen = titlesize * maxRow;
-    final int Hightscreen = maxCol * titlesize;
+    public final int maxCol = 16;
+    public final int maxRow = 12;
+    public final int Widthscreen = titlesize * maxCol;
+    public final int Hightscreen = titlesize * maxRow;
 
+    // ---- ระบบหลัก ----
     KeyEventHandler keyH = new KeyEventHandler();
     final int FPS = 60;
     Thread gameThread;
+    public Boolean MenuOpen = false;
+    public boolean gameOver = false;
 
+    // ---- เอนทิตีหลัก ----
     public Player player1 = new Player(this, keyH);
     public sideEnemy sideenemy1 = new sideEnemy(this, player1, 200, 0);
     public sideEnemy sideenemy2 = new sideEnemy(this, player1, 500, 100);
-    public sideEnemy sideenemy3 = new sideEnemy(this, player1, 300, 300);
+    public sideEnemy sideenemy3 = new sideEnemy(this, player1, 300, 200);
+
+    public pistol currentBullet; // กระสุนปัจจุบัน
 
     Tilemanager tileM = new Tilemanager(this);
-
-    // กระสุนตัวเดียว
-    private pistol currentBullet = null;
 
     public GamePanle() {
         setPreferredSize(new Dimension(Widthscreen, Hightscreen));
@@ -52,10 +56,10 @@ public class GamePanle extends JPanel implements Runnable {
 
     @Override
     public void run() {
-        while (gameThread != null) {
-            double drawInterval = 1_000_000_000.0 / FPS;
-            double nextDrawTime = System.nanoTime() + drawInterval;
+        double drawInterval = 1_000_000_000.0 / FPS;
+        double nextDrawTime = System.nanoTime() + drawInterval;
 
+        while (gameThread != null) {
             update();
             repaint();
 
@@ -72,44 +76,7 @@ public class GamePanle extends JPanel implements Runnable {
         }
     }
 
-    public void update() {
-        player1.update();
-
-        // อัปเดตศัตรูเฉพาะที่ยังอยู่
-        if (sideenemy1.alive){
-            sideenemy1.update();
-        }
-        if (sideenemy2.alive)
-            sideenemy2.update();
-        if (sideenemy3.alive)
-            sideenemy3.update();
-
-        // อัปเดตกระสุน + ชนกับศัตรู
-        if (currentBullet != null) {
-            currentBullet.update();
-
-            Rectangle b = new Rectangle(currentBullet.x, currentBullet.y, 5, 10);
-
-            if (sideenemy1.alive && b.intersects(new Rectangle(sideenemy1.x, sideenemy1.y, titlesize, titlesize))) {
-                sideenemy1.alive = false;
-                currentBullet = null;
-            } else if (sideenemy2.alive
-                    && b.intersects(new Rectangle(sideenemy2.x, sideenemy2.y, titlesize, titlesize))) {
-                sideenemy2.alive = false;
-                currentBullet = null;
-            } else if (sideenemy3.alive
-                    && b.intersects(new Rectangle(sideenemy3.x, sideenemy3.y, titlesize, titlesize))) {
-                sideenemy3.alive = false;
-                currentBullet = null;
-            }
-
-            // ลบกระสุนถ้าหลุดจอ
-            if (currentBullet != null && !currentBullet.alive)
-                currentBullet = null;
-        }
-    }
-
-    // ยิงกระสุนจาก Player (รับ dx, dy)
+    // ยิงกระสุนจากผู้เล่น
     public void shootFromPlayer(int x, int y, int dx, int dy) {
         if (currentBullet != null)
             return;
@@ -127,24 +94,111 @@ public class GamePanle extends JPanel implements Runnable {
         currentBullet = new pistol(this, x, y, bulletSpeed, 1, facing);
     }
 
+    public void update() {
+        // Toggle เมนู
+        if (keyH.tabPressed == 1) {
+            MenuOpen = !MenuOpen;
+            keyH.tabPressed = 0;
+        }
+
+        if (gameOver)
+            return; // ถ้า Game Over ไม่อัปเดต
+
+        if (!MenuOpen) {
+            // อัปเดตผู้เล่น/ศัตรู
+            player1.update();
+            if (sideenemy1.alive)
+                sideenemy1.update();
+            if (sideenemy2.alive)
+                sideenemy2.update();
+            if (sideenemy3.alive)
+                sideenemy3.update();
+
+            // อัปเดตกระสุน + ชนกับศัตรู
+            if (currentBullet != null) {
+                currentBullet.update();
+                Rectangle b = new Rectangle(currentBullet.x, currentBullet.y, 5, 10);
+
+                if (sideenemy1.alive && b.intersects(new Rectangle(sideenemy1.x, sideenemy1.y, titlesize, titlesize))) {
+                    sideenemy1.alive = false;
+                    currentBullet = null;
+                } else if (sideenemy2.alive
+                        && b.intersects(new Rectangle(sideenemy2.x, sideenemy2.y, titlesize, titlesize))) {
+                    sideenemy2.alive = false;
+                    currentBullet = null;
+                } else if (sideenemy3.alive
+                        && b.intersects(new Rectangle(sideenemy3.x, sideenemy3.y, titlesize, titlesize))) {
+                    sideenemy3.alive = false;
+                    currentBullet = null;
+                }
+
+                if (currentBullet != null && !currentBullet.alive)
+                    currentBullet = null;
+            }
+
+            // ---- ชนผู้เล่นกับศัตรู → ให้ Player จัดการเลือดเอง ----
+            Rectangle p = new Rectangle(player1.x, player1.y, titlesize, titlesize);
+            if ((sideenemy1.alive && p.intersects(new Rectangle(sideenemy1.x, sideenemy1.y, titlesize, titlesize))) ||
+                    (sideenemy2.alive && p.intersects(new Rectangle(sideenemy2.x, sideenemy2.y, titlesize, titlesize)))
+                    ||
+                    (sideenemy3.alive
+                            && p.intersects(new Rectangle(sideenemy3.x, sideenemy3.y, titlesize, titlesize)))) {
+                player1.takeDamage(); // ลดเลือดใน Player
+            }
+
+            // ถ้า Player ตาย → Game Over
+            if (!player1.alive) {
+                gameOver = true;
+            }
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        tileM.draw(g2);
+        // Pause overlay
+        if (MenuOpen) {
+            g2.setColor(Color.black);
+            g2.fillRect(0, 0, Widthscreen, Hightscreen);
+            g2.setColor(Color.white);
+            g2.drawRect(100, 100, Widthscreen - 200, Hightscreen - 200);
+            g2.drawString("Paused - press Tab to resume", 260, 250);
+            g2.dispose();
+            return;
+        }
 
-        // วาดตัวละคร/ศัตรู/กระสุน
-        player1.draw(g2);
+        // วาดพื้น, ศัตรู, กระสุน, ผู้เล่น
+        tileM.draw(g2);
         if (sideenemy1.alive)
             sideenemy1.draw(g2);
         if (sideenemy2.alive)
             sideenemy2.draw(g2);
         if (sideenemy3.alive)
             sideenemy3.draw(g2);
-
         if (currentBullet != null)
             currentBullet.draw(g2);
+        player1.draw(g2);
+
+        // ---- HUD: แถบเลือดแบบง่าย ----
+        g2.setColor(Color.red);
+        int barW = 100, barH = 10;
+        int curW = (int) ((player1.health / (double) player1.maxHealth) * barW);
+        g2.fillRect(20, 20, curW, barH);
+        g2.setColor(Color.white);
+        g2.drawRect(20, 20, barW, barH);
+
+        // Game Over overlay
+        if (gameOver) {
+            g2.setColor(new Color(0, 0, 0, 150));
+            g2.fillRect(0, 0, Widthscreen, Hightscreen);
+            g2.setColor(Color.white);
+            g2.setFont(g2.getFont().deriveFont(36f));
+            String msg = "GAME OVER";
+            int w = g2.getFontMetrics().stringWidth(msg);
+            g2.drawString(msg, (Widthscreen - w) / 2, Hightscreen / 2);
+        }
 
         g2.dispose();
     }
