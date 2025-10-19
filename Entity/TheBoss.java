@@ -1,5 +1,5 @@
 package Entity;
 
-public class TheBoss extends Human {
+public class TheBoss extends entity {
     
 }

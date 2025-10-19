@@ -1,34 +1,44 @@
 package Entity;
 
 import java.awt.Color;
+import java.awt.Rectangle;
 
 import MainGame.GamePanle;
 import MainGame.KeyEventHandler;
 
-public class Player extends Human {
+public class Player extends entity {
     public long lastHitTime = 0; // เวลาโดนล่าสุด
     public int invincibleTime = 1000; // 1 วินาที (หน่วย ms)
 
     GamePanle gp;
     KeyEventHandler keyH;
-    public Weapon Current_weapon;
     public int health = 5;
     public int maxHealth = 5;
     public boolean alive = true;
-    // 0=up, 1=down, 2=left, 3=right
+    public final int screenX;
+    public final int screenY;
     int facing = 0;
+
+    public boolean stapping = false;
 
     public Player(GamePanle gp, KeyEventHandler keyH) {
         this.gp = gp;
         this.keyH = keyH;
+        screenX = gp.Widthscreen / 2 - (gp.titlesize / 2);
+        screenY = gp.Hightscreen / 2 - (gp.titlesize / 2);
+
+        solidArea = new Rectangle();
+        solidArea.x = 8;
+        solidArea.y = 16;
+        solidArea.width = 32;
+        solidArea.height = 32;
         setDefaultValues();
-        this.Current_weapon = new Weapon("Pistol", 10, 5);
     }
 
     public void setDefaultValues() {
-        x = 100;
-        y = 100;
-        speed = 4;
+        WorldX = 100;
+        WorldY = 100;
+        speed = 5;
     }
 
     public void takeDamage() {
@@ -48,47 +58,63 @@ public class Player extends Human {
     }
 
     public void update() {
-        if (keyH.upPressed == 1 && (y - speed) >= 0) {
-            y -= speed;
-            facing = 0;
-        }
-        if (keyH.downPressed == 1 && (y + speed) <= gp.getHeight() - gp.titlesize) {
-            y += speed;
-            facing = 1;
-        }
-        if (keyH.leftPressed == 1 && (x - speed) >= 0) {
-            x -= speed;
-            facing = 2;
-        }
-        if (keyH.rightPressed == 1 && (x + speed) <= gp.getWidth() - gp.titlesize) {
-            x += speed;
-            facing = 3;
+        boolean moving = false;
+        if (keyH.upPressed == 1) {
+            directions = "up";
+            moving = true;
+        } else if (keyH.downPressed == 1) {
+            directions = "down";
+            moving = true;
+        } else if (keyH.leftPressed == 1) {
+            directions = "left";
+            moving = true;
+        } else if (keyH.rightPressed == 1) {
+            directions = "right";
+            moving = true;
         }
 
-        // ยิงกระสุนตามทิศที่หัน
         if (keyH.spacePressed == 1) {
-            int cx = x + gp.titlesize / 2;
-            int cy = y + gp.titlesize / 2;
-
-            int bs = Current_weapon.bulletSpeed;
-            int dx = 0, dy = 0;
-            if (facing == 0)
-                dy = -bs;
-            else if (facing == 1)
-                dy = bs;
-            else if (facing == 2)
-                dx = -bs;
-            else if (facing == 3)
-                dx = bs;
-
-            gp.shootFromPlayer(cx, cy, dx, dy); // ยิงจริง
-
-            keyH.spacePressed = 0;
+            stapping = true;
         }
+
+        if (moving) {
+            collisionOn = false;
+            gp.collisionChecker.checkTile(this); // ใช้ directions ที่ไม่ null แล้ว
+            if (!collisionOn) {
+                switch (directions) {
+                    case "up" -> WorldY -= speed;
+                    case "down" -> WorldY += speed;
+                    case "left" -> WorldX -= speed;
+                    case "right" -> WorldX += speed;
+                }
+            }
+        }
+
     }
 
     public void draw(java.awt.Graphics2D g2) {
         g2.setColor(Color.white);
-        g2.fillRect(x, y, gp.titlesize, gp.titlesize);
+        g2.fillRect(screenX, screenY, gp.titlesize, gp.titlesize);
+        if (stapping) {
+            g2.setColor(Color.red);
+            int len = gp.titlesize, thick = gp.titlesize / 4;
+
+            switch (directions) {
+                case "up" -> g2.fillRect(screenX + gp.titlesize / 2 - thick / 2,
+                        screenY - len,
+                        thick, len);
+                case "down" -> g2.fillRect(screenX + gp.titlesize / 2 - thick / 2,
+                        screenY + gp.titlesize,
+                        thick, len);
+                case "left" -> g2.fillRect(screenX - len,
+                        screenY + gp.titlesize / 2 - thick / 2,
+                        len, thick);
+                case "right" -> g2.fillRect(screenX + gp.titlesize,
+                        screenY + gp.titlesize / 2 - thick / 2,
+                        len, thick);
+            }
+            stapping = false;
+        }
+
     }
 }

@@ -4,13 +4,11 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 
 import javax.swing.JPanel;
 
 import Entity.Player;
-import Entity.pistol;
-import Entity.sideEnemy;
+import Entity.obstacle;
 import tile.Tilemanager;
 
 public class GamePanle extends JPanel implements Runnable {
@@ -30,13 +28,17 @@ public class GamePanle extends JPanel implements Runnable {
     public Boolean MenuOpen = false;
     public boolean gameOver = false;
 
+    public final int maxWorldCol = 50;
+    public final int maxWorldRow = 50;
+    public final int WorldWidth = titlesize * maxWorldCol;
+    public final int WorldHeight = titlesize * maxWorldRow;
     // ---- เอนทิตีหลัก ----
     public Player player1 = new Player(this, keyH);
-    public sideEnemy sideenemy1 = new sideEnemy(this, player1, 200, 0);
-    public sideEnemy sideenemy2 = new sideEnemy(this, player1, 500, 100);
-    public sideEnemy sideenemy3 = new sideEnemy(this, player1, 300, 200);
+    public obstacle Obs1 = new obstacle(this,0,500);
+    public obstacle Obs2 = new obstacle(this,0,700);
+    public obstacle Obs3 = new obstacle(this,0,1000);
+    public CollisionCheck collisionChecker = new CollisionCheck(this);
 
-    public pistol currentBullet; // กระสุนปัจจุบัน
 
     Tilemanager tileM = new Tilemanager(this);
 
@@ -76,23 +78,6 @@ public class GamePanle extends JPanel implements Runnable {
         }
     }
 
-    // ยิงกระสุนจากผู้เล่น
-    public void shootFromPlayer(int x, int y, int dx, int dy) {
-        if (currentBullet != null)
-            return;
-
-        int facing;
-        int bulletSpeed;
-        if (Math.abs(dx) >= Math.abs(dy)) {
-            facing = (dx >= 0) ? 3 : 2; // ขวา : ซ้าย
-            bulletSpeed = Math.abs(dx);
-        } else {
-            facing = (dy >= 0) ? 1 : 0; // ลง : ขึ้น
-            bulletSpeed = Math.abs(dy);
-        }
-
-        currentBullet = new pistol(this, x, y, bulletSpeed, 1, facing);
-    }
 
     public void update() {
         // Toggle เมนู
@@ -107,44 +92,9 @@ public class GamePanle extends JPanel implements Runnable {
         if (!MenuOpen) {
             // อัปเดตผู้เล่น/ศัตรู
             player1.update();
-            if (sideenemy1.alive)
-                sideenemy1.update();
-            if (sideenemy2.alive)
-                sideenemy2.update();
-            if (sideenemy3.alive)
-                sideenemy3.update();
-
-            // อัปเดตกระสุน + ชนกับศัตรู
-            if (currentBullet != null) {
-                currentBullet.update();
-                Rectangle b = new Rectangle(currentBullet.x, currentBullet.y, 5, 10);
-
-                if (sideenemy1.alive && b.intersects(new Rectangle(sideenemy1.x, sideenemy1.y, titlesize, titlesize))) {
-                    sideenemy1.alive = false;
-                    currentBullet = null;
-                } else if (sideenemy2.alive
-                        && b.intersects(new Rectangle(sideenemy2.x, sideenemy2.y, titlesize, titlesize))) {
-                    sideenemy2.alive = false;
-                    currentBullet = null;
-                } else if (sideenemy3.alive
-                        && b.intersects(new Rectangle(sideenemy3.x, sideenemy3.y, titlesize, titlesize))) {
-                    sideenemy3.alive = false;
-                    currentBullet = null;
-                }
-
-                if (currentBullet != null && !currentBullet.alive)
-                    currentBullet = null;
-            }
-
-            // ---- ชนผู้เล่นกับศัตรู → ให้ Player จัดการเลือดเอง ----
-            Rectangle p = new Rectangle(player1.x, player1.y, titlesize, titlesize);
-            if ((sideenemy1.alive && p.intersects(new Rectangle(sideenemy1.x, sideenemy1.y, titlesize, titlesize))) ||
-                    (sideenemy2.alive && p.intersects(new Rectangle(sideenemy2.x, sideenemy2.y, titlesize, titlesize)))
-                    ||
-                    (sideenemy3.alive
-                            && p.intersects(new Rectangle(sideenemy3.x, sideenemy3.y, titlesize, titlesize)))) {
-                player1.takeDamage(); // ลดเลือดใน Player
-            }
+            Obs1.update();
+            // Obs2.update();
+            // Obs3.update();
 
             // ถ้า Player ตาย → Game Over
             if (!player1.alive) {
@@ -171,16 +121,10 @@ public class GamePanle extends JPanel implements Runnable {
 
         // วาดพื้น, ศัตรู, กระสุน, ผู้เล่น
         tileM.draw(g2);
-        if (sideenemy1.alive)
-            sideenemy1.draw(g2);
-        if (sideenemy2.alive)
-            sideenemy2.draw(g2);
-        if (sideenemy3.alive)
-            sideenemy3.draw(g2);
-        if (currentBullet != null)
-            currentBullet.draw(g2);
         player1.draw(g2);
-
+        Obs1.draw(g2);
+        // Obs2.draw(g2);
+        // Obs3.draw(g2);
         // ---- HUD: แถบเลือดแบบง่าย ----
         g2.setColor(Color.red);
         int barW = 100, barH = 10;
