@@ -1,11 +1,11 @@
-package Entity;
+package entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 
 import MainGame.GamePanle;
 
-public class obstacle extends entity {
+public class obstacle extends Entity {
     GamePanle gp;
     int startX;
     boolean movingRight = true;

@@ -1,4 +1,4 @@
-package Entity;
+package entity;
 
 import java.awt.Color;
 import java.awt.Rectangle;
@@ -6,7 +6,7 @@ import java.awt.Rectangle;
 import MainGame.GamePanle;
 import MainGame.KeyEventHandler;
 
-public class Player extends entity {
+public class Player extends Entity {
     public long lastHitTime = 0; // เวลาโดนล่าสุด
     public int invincibleTime = 1000; // 1 วินาที (หน่วย ms)
 

@@ -1,6 +1,6 @@
 package MainGame;
 
-import Entity.entity;
+import entity.Entity;
 
 public class CollisionCheck {
     GamePanle gp;
@@ -9,7 +9,7 @@ public class CollisionCheck {
         this.gp = gp;
     }
 
-    public void checkTile(entity et) {
+    public void checkTile(Entity et) {
 
         int entityLeftWorldX   = et.WorldX + et.solidArea.x;
         int entityRightWorldX  = et.WorldX + et.solidArea.x + et.solidArea.width;

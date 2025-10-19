@@ -1,11 +1,11 @@
-package Entity;
+package entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
 
 import MainGame.GamePanle;
 
-public class sideEnemy extends entity {
+public class sideEnemy extends Entity {
     GamePanle gp;
     public boolean alive = true;
     private boolean movingDown = true; // true = ลง, false = ขึ้น

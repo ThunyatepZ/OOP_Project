@@ -7,8 +7,8 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
-import Entity.Player;
-import Entity.obstacle;
+import entity.Player;
+import entity.obstacle;
 import tile.Tilemanager;
 
 public class GamePanle extends JPanel implements Runnable {

@@ -1,5 +1,5 @@
-package Entity;
+package entity;
 
-public class TheBoss extends entity {
+public class TheBoss extends Entity {
     
 }

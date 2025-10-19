@@ -1,7 +1,7 @@
-package Entity;
+package entity;
 
 import java.awt.Rectangle;
-public class entity {
+public class Entity {
     public int WorldX, WorldY, speed;
     public Rectangle solidArea;
     public String directions = "";

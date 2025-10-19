@@ -1,4 +1,4 @@
-package Entity;
+package entity;
 
 public class Weapon {
     public String name;
