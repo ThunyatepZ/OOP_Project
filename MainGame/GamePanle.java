@@ -4,11 +4,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import entity.Bullet;
+import entity.Enemy;
 import entity.Player;
-import entity.obstacle;
 import tile.Tilemanager;
 
 public class GamePanle extends JPanel implements Runnable {
@@ -21,26 +23,33 @@ public class GamePanle extends JPanel implements Runnable {
     public final int Widthscreen = titlesize * maxCol;
     public final int Hightscreen = titlesize * maxRow;
 
-    // ---- ระบบหลัก ----
-    KeyEventHandler keyH = new KeyEventHandler();
-    final int FPS = 60;
-    Thread gameThread;
-    public Boolean MenuOpen = false;
-    public boolean gameOver = false;
-
+    // โลก
     public final int maxWorldCol = 50;
     public final int maxWorldRow = 50;
     public final int WorldWidth = titlesize * maxWorldCol;
     public final int WorldHeight = titlesize * maxWorldRow;
+
+    // ---- ระบบหลัก ----
+    KeyEventHandler keyH = new KeyEventHandler();
+    final int FPS = 60;
+    Thread gameThread;
+    public boolean MenuOpen = false;
+    public boolean gameOver = false;
+
     // ---- เอนทิตีหลัก ----
     public Player player1 = new Player(this, keyH);
-    public obstacle Obs1 = new obstacle(this,0,500);
-    public obstacle Obs2 = new obstacle(this,0,700);
-    public obstacle Obs3 = new obstacle(this,0,1000);
+
+    // ศัตรูหลายตัว
+    public ArrayList<Enemy> enemies = new ArrayList<>();
+
+    // กระสุนทั้งหมด
+    public ArrayList<Bullet> bullets = new ArrayList<>();
+
+    // ตัวอย่าง obstacle
+    // public obstacle Obs1 = new obstacle(this, 0, 500);
+
     public CollisionCheck collisionChecker = new CollisionCheck(this);
-
-
-    Tilemanager tileM = new Tilemanager(this);
+    public Tilemanager tileM = new Tilemanager(this);
 
     public GamePanle() {
         setPreferredSize(new Dimension(Widthscreen, Hightscreen));
@@ -49,6 +58,11 @@ public class GamePanle extends JPanel implements Runnable {
         addKeyListener(keyH);
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
+
+        // เติมศัตรูตัวอย่าง
+        enemies.add(new Enemy(this, 500, 500));
+        enemies.add(new Enemy(this, 700, 500));
+        enemies.add(new Enemy(this, 400, 800));
     }
 
     public void startGameThread() {
@@ -68,8 +82,7 @@ public class GamePanle extends JPanel implements Runnable {
             try {
                 double remainingTime = nextDrawTime - System.nanoTime();
                 remainingTime /= 1_000_000.0;
-                if (remainingTime < 0)
-                    remainingTime = 0;
+                if (remainingTime < 0) remainingTime = 0;
                 Thread.sleep((long) remainingTime);
                 nextDrawTime += drawInterval;
             } catch (Exception e) {
@@ -78,25 +91,31 @@ public class GamePanle extends JPanel implements Runnable {
         }
     }
 
-
     public void update() {
         // Toggle เมนู
         if (keyH.tabPressed == 1) {
             MenuOpen = !MenuOpen;
             keyH.tabPressed = 0;
         }
-
-        if (gameOver)
-            return; // ถ้า Game Over ไม่อัปเดต
+        if (gameOver) return;
 
         if (!MenuOpen) {
-            // อัปเดตผู้เล่น/ศัตรู
             player1.update();
-            Obs1.update();
-            // Obs2.update();
-            // Obs3.update();
+            // Obs1.update();
 
-            // ถ้า Player ตาย → Game Over
+            // อัปเดตศัตรูที่ยังไม่ตาย
+            for (Enemy e : enemies) {
+                if (e.alive) e.update();
+            }
+
+            // อัปเดตกระสุน + เก็บกวาด
+            for (int i = 0; i < bullets.size(); i++) {
+                Bullet b = bullets.get(i);
+                b.update();
+                if (!b.alive) { bullets.remove(i); i--; }
+            }
+
+            // ตรวจ Game Over
             if (!player1.alive) {
                 gameOver = true;
             }
@@ -108,24 +127,35 @@ public class GamePanle extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        // Pause overlay
         if (MenuOpen) {
             g2.setColor(Color.black);
             g2.fillRect(0, 0, Widthscreen, Hightscreen);
             g2.setColor(Color.white);
             g2.drawRect(100, 100, Widthscreen - 200, Hightscreen - 200);
             g2.drawString("Paused - press Tab to resume", 260, 250);
-            g2.dispose();
             return;
         }
 
-        // วาดพื้น, ศัตรู, กระสุน, ผู้เล่น
+        // วาดพื้น/แมพ
         tileM.draw(g2);
+
+        // วาด obstacle
+        // Obs1.draw(g2);
+
+        // วาดศัตรู
+        for (Enemy e : enemies) {
+            if (e.alive) e.draw(g2);
+        }
+
+        // วาดกระสุน
+        for (Bullet b : bullets) {
+            b.draw(g2);
+        }
+
+        // วาดผู้เล่น (บนสุด)
         player1.draw(g2);
-        Obs1.draw(g2);
-        // Obs2.draw(g2);
-        // Obs3.draw(g2);
-        // ---- HUD: แถบเลือดแบบง่าย ----
+
+        // HUD: แถบเลือด
         g2.setColor(Color.red);
         int barW = 100, barH = 10;
         int curW = (int) ((player1.health / (double) player1.maxHealth) * barW);
@@ -133,7 +163,6 @@ public class GamePanle extends JPanel implements Runnable {
         g2.setColor(Color.white);
         g2.drawRect(20, 20, barW, barH);
 
-        // Game Over overlay
         if (gameOver) {
             g2.setColor(new Color(0, 0, 0, 150));
             g2.fillRect(0, 0, Widthscreen, Hightscreen);
@@ -143,7 +172,5 @@ public class GamePanle extends JPanel implements Runnable {
             int w = g2.getFontMetrics().stringWidth(msg);
             g2.drawString(msg, (Widthscreen - w) / 2, Hightscreen / 2);
         }
-
-        g2.dispose();
     }
 }

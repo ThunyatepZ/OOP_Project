@@ -1,50 +1,110 @@
-// package Entity;
+package entity;
 
-// import java.awt.Color;
-// import java.awt.Graphics2D;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 
-// import MainGame.GamePanle;
+import javax.imageio.ImageIO;
 
-// public class Enemy extends Entity {
-//     GamePanle gp;
-//     Player target;
-//     public boolean alive = true;
+import MainGame.GamePanle;
 
-//     public Enemy(GamePanle gp, Player target) {
-//         this.gp = gp;
-//         this.target = target;
-//         setDefaultValues();
-//     }
+public class Enemy extends Entity {
+    GamePanle gp;
+    public int size;
 
-//     public void setDefaultValues() {
-//         x = 500;
-//         y = 500;
-//         speed = 1;
-//     }
-//     public void update() {
-//         int r = gp.titlesize;
+    // ถ้า Entity ของโปรเจกต์มีฟิลด์ up/down/left/right อยู่แล้ว ตัด 4 บรรทัดนี้ออกได้
+    BufferedImage up, down, left, right;
 
-//         if (target.x > x + r) {
-//             x += speed;
-//         } 
-//         else if (target.x + r < x) {
-//             x -= speed;
-//         }
+    public Enemy(GamePanle gp, int startX, int startY) {
+        this.gp = gp;
+        this.size = gp.titlesize;
 
-//         if (target.y > y + r) {
-//             y += speed;
-//         }
-//         else if (target.y + r < y) {
-//             y -= speed;
-//         }
+        this.WorldX = startX;
+        this.WorldY = startY;
 
-//         // กันไม่ให้ออกนอกจอ
-//         x = Math.max(0, Math.min(x, gp.getWidth() - r));
-//         y = Math.max(0, Math.min(y, gp.getHeight() - r));
-//     }
+        this.solidArea = new Rectangle(8, 16, 32, 32);
+        this.speed = 2;
+        this.directions = "down";
+        this.alive = true;
 
-//     public void draw(Graphics2D g2) {
-//         g2.setColor(Color.red);
-//         g2.fillRect(x, y, gp.titlesize, gp.titlesize);
-//     }
-// }
+        getEnemyImage(); // โหลดสไปรต์
+    }
+
+    public void getEnemyImage() {
+        try {
+            // ใช้รูปของ Player ไปก่อน (เอาชื่อไฟล์ให้ตรงแคปส์ด้วย)
+            up    = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ghost.png"));
+            down  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ghost.png"));
+            left  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ghost.png"));
+            right = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ghost.png"));
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+            // ถ้าโหลดไม่สำเร็จ ปล่อยให้เป็น null จะ fallback เป็นสี่เหลี่ยมแดงตอนวาด
+        }
+    }
+
+    @Override
+    public void update() {
+        if (!alive) return;
+
+        int px = gp.player1.WorldX;
+        int py = gp.player1.WorldY;
+
+        // เดินไล่ผู้เล่นทีละแกน + เช็คชน tile
+        if (WorldX < px) {
+            directions = "right";
+            collisionOn = false;
+            gp.collisionChecker.checkTile(this);
+            if (!collisionOn) WorldX += speed;
+        } else if (WorldX > px) {
+            directions = "left";
+            collisionOn = false;
+            gp.collisionChecker.checkTile(this);
+            if (!collisionOn) WorldX -= speed;
+        }
+
+        if (WorldY < py) {
+            directions = "down";
+            collisionOn = false;
+            gp.collisionChecker.checkTile(this);
+            if (!collisionOn) WorldY += speed;
+        } else if (WorldY > py) {
+            directions = "up";
+            collisionOn = false;
+            gp.collisionChecker.checkTile(this);
+            if (!collisionOn) WorldY -= speed;
+        }
+
+        // ชนผู้เล่น → ทำดาเมจ
+        Rectangle enemyRect  = new Rectangle(WorldX, WorldY, size, size);
+        Rectangle playerRect = new Rectangle(px, py, gp.titlesize, gp.titlesize);
+        if (enemyRect.intersects(playerRect)) {
+            gp.player1.takeDamage();
+        }
+    }
+
+    @Override
+    public void draw(Graphics2D g2) {
+        if (!alive) return;
+
+        int screenX = WorldX - gp.player1.WorldX + gp.player1.screenX;
+        int screenY = WorldY - gp.player1.WorldY + gp.player1.screenY;
+
+        BufferedImage image = switch (directions) {
+            case "up"    -> up;
+            case "down"  -> down;
+            case "left"  -> left;
+            default      -> right; // "right"
+        };
+
+        if (image != null) {
+            g2.drawImage(image, screenX, screenY, gp.titlesize, gp.titlesize, null);
+        } else {
+            // ถ้ารูปไม่โหลด ให้เห็นเป็นสี่เหลี่ยมแดงแทน
+            g2.setColor(Color.RED);
+            g2.fillRect(screenX, screenY, size, size);
+        }
+    }
+}

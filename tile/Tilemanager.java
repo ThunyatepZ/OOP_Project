@@ -24,13 +24,13 @@ public class Tilemanager {
     public void getTileImage() {
         try {
             tile[0] = new Tile();
-            tile[0].image = ImageIO.read(getClass().getResourceAsStream("/acs/tile_map/edge.png"));
-            
+            tile[0].image = ImageIO.read(getClass().getResourceAsStream("/acs/tile_map/cp.png"));
             tile[1] = new Tile();
             tile[1].image = ImageIO.read(getClass().getResourceAsStream("/acs/tile_map/floorReplace.png"));
             tile[2] = new Tile();
             tile[2].image = ImageIO.read(getClass().getResourceAsStream("/acs/tile_map/Wall.png"));
             tile[2].collision = true;
+            
             
         } catch (IOException e) {
             e.printStackTrace();

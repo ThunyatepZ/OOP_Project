@@ -2,73 +2,56 @@ package MainGame;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-public class KeyEventHandler implements KeyListener{
 
-    public int upPressed, downPressed, leftPressed, rightPressed,spacePressed,wep1,wep2,wep3 = 0;
-    public int tabPressed, enterPressed; // ← เพิ่ม
+public class KeyEventHandler implements KeyListener {
+    public int upPressed = 0, downPressed = 0, leftPressed = 0, rightPressed = 0;
+    public int spacePressed = 0;
+    public int tabPressed = 0;
+    public int shootPressed = 0; // ปุ่มยิง (F)
+
     @Override
-    public void keyTyped(java.awt.event.KeyEvent e) {
-
-        
+    public void keyTyped(KeyEvent e) {
     }
 
     @Override
-    public void keyPressed(java.awt.event.KeyEvent e) {
-
-        int ASCII = e.getKeyCode();
-        if(ASCII == KeyEvent.VK_W){
+    public void keyPressed(KeyEvent e) {
+        int code = e.getKeyCode();
+        if (code == KeyEvent.VK_W || code == KeyEvent.VK_UP)
             upPressed = 1;
-        }
-        if(ASCII == KeyEvent.VK_A){
-            System.out.println("A");
-            leftPressed = 1;
-        }
-        if(ASCII == KeyEvent.VK_S){
-            System.out.println("S");
+        if (code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN)
             downPressed = 1;
-        }
-        if(ASCII == KeyEvent.VK_D){
-            System.out.println("D");
+        if (code == KeyEvent.VK_A || code == KeyEvent.VK_LEFT)
+            leftPressed = 1;
+        if (code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT)
             rightPressed = 1;
-        }
-        if(ASCII == KeyEvent.VK_SPACE){
-            System.out.println("SPACE");
+
+        if (code == KeyEvent.VK_SPACE)
             spacePressed = 1;
-        }
+        if (code == KeyEvent.VK_TAB)
+            tabPressed = 1;
 
-        if (ASCII == KeyEvent.VK_P)   tabPressed = 1;    // ← เพิ่ม
-        
-        if(ASCII == KeyEvent.VK_1){
-            wep1 = 1;
-        }
-
-        // if (ASCII == KeyEvent.VK_ENTER) enterPressed = 1;  // ← เพิ่ม
+        if (code == KeyEvent.VK_F)
+            shootPressed = 1; // ยิง
     }
 
     @Override
-    public void keyReleased(java.awt.event.KeyEvent e) {
-        int ASCII = e.getKeyCode();
-        if(ASCII == KeyEvent.VK_W){
+    public void keyReleased(KeyEvent e) {
+        int code = e.getKeyCode();
+        if (code == KeyEvent.VK_W || code == KeyEvent.VK_UP)
             upPressed = 0;
-        }
-        if(ASCII == KeyEvent.VK_A){
-            System.out.println("A");
-            leftPressed = 0;
-        }
-        if(ASCII == KeyEvent.VK_S){
-            System.out.println("S");
+        if (code == KeyEvent.VK_S || code == KeyEvent.VK_DOWN)
             downPressed = 0;
-        }
-        if(ASCII == KeyEvent.VK_D){
-            System.out.println("D");
+        if (code == KeyEvent.VK_A || code == KeyEvent.VK_LEFT)
+            leftPressed = 0;
+        if (code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT)
             rightPressed = 0;
-        }
-        if(ASCII == KeyEvent.VK_SPACE){
-            System.out.println("SPACE");
+
+        if (code == KeyEvent.VK_SPACE)
             spacePressed = 0;
-        }
-        if (ASCII == KeyEvent.VK_P)   tabPressed = 0;;     // ← เพิ่ม
-        // if (ASCII == KeyEvent.VK_ENTER) enterPressed = 0;   // ← เพิ่ม
-        
+        if (code == KeyEvent.VK_TAB)
+            tabPressed = 0;
+
+        if (code == KeyEvent.VK_F)
+            shootPressed = 0; // ปล่อยปุ่มยิง
     }
 }

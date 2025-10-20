@@ -2,6 +2,7 @@ package entity;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 
 import MainGame.GamePanle;
 
@@ -23,6 +24,11 @@ public class obstacle extends Entity {
     }
 
     public void update() {
+        Rectangle obstacleRec = new Rectangle(WorldX,WorldY,gp.titlesize,gp.titlesize /3);
+        Rectangle PlayerRec = new Rectangle(gp.player1.WorldX, gp.player1.WorldY, gp.titlesize, gp.titlesize);
+        if(obstacleRec.intersects(PlayerRec)){
+            gp.player1.takeDamage();
+        }
         if (movingRight) {
             WorldX += speed;
             if (WorldX > startX + gp.titlesize * 7) movingRight = false;
