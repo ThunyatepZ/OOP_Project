@@ -30,6 +30,22 @@ public class Tilemanager {
             tile[2] = new Tile();
             tile[2].image = ImageIO.read(getClass().getResourceAsStream("/acs/tile_map/Wall.png"));
             tile[2].collision = true;
+            tile[3] = new Tile();
+            tile[3].image = ImageIO.read(getClass().getResourceAsStream("/acs/tile_map/snow2.png"));
+            tile[3].collision = false;
+            tile[4] = new Tile();
+            tile[4].image = ImageIO.read(getClass().getResourceAsStream("/acs/tile_map/river.png"));
+            tile[4].collision = true;
+            tile[5] = new Tile();
+            tile[5].image = ImageIO.read(getClass().getResourceAsStream("/acs/tile_map/Grass2.png"));
+            tile[5].collision = false;
+            tile[6] = new Tile();
+            tile[6].image = ImageIO.read(getClass().getResourceAsStream("/acs/tile_map/snow1.png"));
+            tile[6].collision = false;
+            tile[7] = new Tile();
+            tile[7].image = ImageIO.read(getClass().getResourceAsStream("/acs/tile_map/Grass1.png"));
+            tile[7].collision = false;
+    
             
             
         } catch (IOException e) {

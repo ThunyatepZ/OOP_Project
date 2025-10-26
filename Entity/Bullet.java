@@ -5,22 +5,23 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
 import MainGame.GamePanle;
-
 public class Bullet {
     public GamePanle gp;
 
     public int WorldX, WorldY;   // ตำแหน่ง world
     public int speed = 8;        // ความเร็ว px/เฟรม
     public int dx = 0, dy = 0;   // ทิศทางหน่วย (-1,0,1)
-    public int size = 8;         // ขนาดกระสุน
-    public boolean alive = true; // ยังอยู่ไหม
-
-    public Bullet(GamePanle gp, int startX, int startY, int dx, int dy) {
+    public int size = 20;         // ขนาดกระสุน
+    public boolean alive = true;
+    public int damage = 0; // ยังอยู่ไหม
+    private Player player;
+    public Bullet(GamePanle gp, int startX, int startY, int dx, int dy,int damage) {
         this.gp = gp;
         this.WorldX = startX;
         this.WorldY = startY;
         this.dx = dx;
         this.dy = dy;
+        this.damage = damage;
     }
 
     public void update() {
@@ -67,7 +68,7 @@ public class Bullet {
         int screenX = WorldX - gp.player1.WorldX + gp.player1.screenX;
         int screenY = WorldY - gp.player1.WorldY + gp.player1.screenY;
 
-        g2.setColor(Color.YELLOW);
+        g2.setColor(Color.RED);
         g2.fillOval(screenX, screenY, size, size);
     }
 }

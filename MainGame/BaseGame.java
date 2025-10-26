@@ -1,19 +1,22 @@
 package MainGame;
-// import java.awt.*;
-import javax.swing.JFrame;
-public class BaseGame {
 
-    public static void main(String[] args){
-        JFrame window = new JFrame();
+import javax.swing.JFrame;
+
+public class BaseGame {
+    static JFrame window;
+
+    public static void main(String[] args) {
+        window = new JFrame("2D Game - Stage 1");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
-        window.setTitle("2D Game");
-        GamePanle gamePanle = new GamePanle();
-        window.add(gamePanle);
+
+        GamePanle gp = new GamePanle(); // ด่านแรก
+        window.add(gp);
         window.pack();
         window.setLocationRelativeTo(null);
-
-        gamePanle.startGameThread();
         window.setVisible(true);
+        gp.startGameThread();
     }
+
+    // ฟังก์ชันเปลี่ยนไปด่าน 2
 }

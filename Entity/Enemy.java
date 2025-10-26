@@ -14,7 +14,6 @@ public class Enemy extends Entity {
     GamePanle gp;
     public int size;
 
-    // ถ้า Entity ของโปรเจกต์มีฟิลด์ up/down/left/right อยู่แล้ว ตัด 4 บรรทัดนี้ออกได้
     BufferedImage up, down, left, right;
 
     public Enemy(GamePanle gp, int startX, int startY) {
@@ -29,25 +28,43 @@ public class Enemy extends Entity {
         this.directions = "down";
         this.alive = true;
 
-        getEnemyImage(); // โหลดสไปรต์
+        getEnemyImage();
     }
 
     public void getEnemyImage() {
         try {
-            // ใช้รูปของ Player ไปก่อน (เอาชื่อไฟล์ให้ตรงแคปส์ด้วย)
             up    = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ghost.png"));
-            down  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ghost.png"));
-            left  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ghost.png"));
-            right = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ghost.png"));
+            down  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/GhostRight.png"));
+            left  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/GhostRight.png"));
+            right = ImageIO.read(getClass().getResourceAsStream("/acs/Character/GhostRight.png"));
         } catch (IOException | NullPointerException e) {
             e.printStackTrace();
-            // ถ้าโหลดไม่สำเร็จ ปล่อยให้เป็น null จะ fallback เป็นสี่เหลี่ยมแดงตอนวาด
         }
     }
 
     @Override
     public void update() {
         if (!alive) return;
+
+        // ======= เช็กว่า "ศัตรู" อยู่บนจอไหม =======
+        // คำนวณตำแหน่งศัตรูบนหน้าจอ (อิงผู้เล่นเป็นกล้อง)
+        int screenX = WorldX - gp.player1.WorldX + gp.player1.screenX;
+        int screenY = WorldY - gp.player1.WorldY + gp.player1.screenY;
+
+        // ขอบเผื่อ (ศัตรูจะเริ่มทำงานก่อนเข้าเฟรมจริงนิดหน่อย) — ปรับได้
+        int margin = 0; // เช่น 64 ถ้าอยากให้เริ่มทำงานก่อนเข้าเฟรม
+
+        boolean onScreen =
+            (screenX + size >= -margin) &&
+            (screenX <= gp.Widthscreen + margin) &&
+            (screenY + size >= -margin) &&
+            (screenY <= gp.Hightscreen + margin);
+
+        if (!onScreen) {
+            // อยู่นอกจอ → ไม่อัปเดตการเคลื่อนที่/ไล่ตาม
+            return;
+        }
+        // ======= จบเช็กบนจอ =======
 
         int px = gp.player1.WorldX;
         int py = gp.player1.WorldY;
@@ -96,13 +113,12 @@ public class Enemy extends Entity {
             case "up"    -> up;
             case "down"  -> down;
             case "left"  -> left;
-            default      -> right; // "right"
+            default      -> right;
         };
 
         if (image != null) {
             g2.drawImage(image, screenX, screenY, gp.titlesize, gp.titlesize, null);
         } else {
-            // ถ้ารูปไม่โหลด ให้เห็นเป็นสี่เหลี่ยมแดงแทน
             g2.setColor(Color.RED);
             g2.fillRect(screenX, screenY, size, size);
         }

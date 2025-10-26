@@ -16,11 +16,13 @@ public class Player extends Entity {
     public int invincibleTime = 1000;
 
     GamePanle gp;
+
     KeyEventHandler keyH;
+
 
     public int health = 5;
     public int maxHealth = 5;
-
+    public int score = 0;
     public final int screenX;
     public final int screenY;
 
@@ -60,8 +62,8 @@ public class Player extends Entity {
 
     @Override
     public void setDefaultValues() {
-        WorldX = 100;
-        WorldY = 100;
+        WorldX = gp.titlesize * 23;
+        WorldY = gp.titlesize * 25;
         speed = 5;
         directions = "down";
         collisionOn = false;
@@ -179,7 +181,7 @@ public class Player extends Entity {
         }
         if (dirX == 0 && dirY == 0) return;
 
-        Bullet b = new Bullet(gp, bx, by, dirX, dirY);
+        Bullet b = new Bullet(gp, bx, by, dirX, dirY,7);
         gp.bullets.add(b);
     }
 

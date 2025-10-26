@@ -8,6 +8,7 @@ public class KeyEventHandler implements KeyListener {
     public int spacePressed = 0;
     public int tabPressed = 0;
     public int shootPressed = 0; // ปุ่มยิง (F)
+    public int enterPressed = 0;
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -32,6 +33,9 @@ public class KeyEventHandler implements KeyListener {
 
         if (code == KeyEvent.VK_F)
             shootPressed = 1; // ยิง
+        if (code == KeyEvent.VK_ENTER)
+            enterPressed = 1;
+        
     }
 
     @Override
@@ -53,5 +57,8 @@ public class KeyEventHandler implements KeyListener {
 
         if (code == KeyEvent.VK_F)
             shootPressed = 0; // ปล่อยปุ่มยิง
+        if (code == KeyEvent.VK_ENTER)
+            enterPressed = 0;
+        
     }
 }
