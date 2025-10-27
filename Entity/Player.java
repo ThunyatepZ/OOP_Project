@@ -16,12 +16,10 @@ public class Player extends Entity {
     public int invincibleTime = 1000;
 
     GamePanle gp;
-
     KeyEventHandler keyH;
 
-
-    public int health = 5;
-    public int maxHealth = 5;
+    public int health = 10;
+    public int maxHealth = 10;
     public int score = 0;
     public final int screenX;
     public final int screenY;
@@ -63,8 +61,8 @@ public class Player extends Entity {
     @Override
     public void setDefaultValues() {
         WorldX = gp.titlesize * 23;
-        WorldY = gp.titlesize * 25;
-        speed = 5;
+        WorldY = gp.titlesize * 35;
+        speed = 10;
         directions = "down";
         collisionOn = false;
         alive = true;
@@ -91,13 +89,6 @@ public class Player extends Entity {
         else if (keyH.leftPressed == 1)  { directions = "left";  moving = true; }
         else if (keyH.rightPressed == 1) { directions = "right"; moving = true; }
 
-        // แทงมีด
-        if (keyH.spacePressed == 1) {
-            stapping = true;
-            doStab();
-            keyH.spacePressed = 0;
-        }
-
         // ยิงปืน (ปุ่ม F)
         if (keyH.shootPressed == 1) {
             tryShoot();
@@ -120,48 +111,6 @@ public class Player extends Entity {
         }
     }
 
-    // แทงมีด
-    private void doStab() {
-        Rectangle stab = getStabHitbox();
-
-        for (Enemy e : gp.enemies) {
-            if (!e.alive) continue;
-            Rectangle enemyRect = new Rectangle(e.WorldX, e.WorldY, e.size, e.size);
-            if (stab.intersects(enemyRect)) {
-                e.alive = false;
-            }
-        }
-    }
-
-    private Rectangle getStabHitbox() {
-        int len = gp.titlesize / 2;
-        int thick = gp.titlesize / 4;
-        int x, y, w, h;
-
-        switch (directions) {
-            case "up" -> {
-                x = WorldX + gp.titlesize/2 - thick/2;
-                y = WorldY - len;
-                w = thick; h = len;
-            }
-            case "down" -> {
-                x = WorldX + gp.titlesize/2 - thick/2;
-                y = WorldY + gp.titlesize;
-                w = thick; h = len;
-            }
-            case "left" -> {
-                x = WorldX - len;
-                y = WorldY + gp.titlesize/2 - thick/2;
-                w = len; h = thick;
-            }
-            default /* right */ -> {
-                x = WorldX + gp.titlesize;
-                y = WorldY + gp.titlesize/2 - thick/2;
-                w = len; h = thick;
-            }
-        }
-        return new Rectangle(x, y, w, h);
-    }
 
     // ยิงปืน
     private void tryShoot() {
@@ -169,7 +118,7 @@ public class Player extends Entity {
         if (now - lastShotTime < shotCooldown) return;
         lastShotTime = now;
 
-        int bx = WorldX + gp.titlesize/2 - 4; // -4 = ครึ่งของ size bullet 8
+        int bx = WorldX + gp.titlesize/2 - 4;
         int by = WorldY + gp.titlesize/2 - 4;
 
         int dirX = 0, dirY = 0;
@@ -200,17 +149,5 @@ public class Player extends Entity {
             g2.fillRect(screenX, screenY, gp.titlesize, gp.titlesize);
         }
 
-        // วาดมีดแค่ 1 เฟรม
-        if (stapping) {
-            g2.setColor(Color.GRAY);
-            int len = gp.titlesize/2, thick = gp.titlesize / 4;
-            switch (directions) {
-                case "up"    -> g2.fillRect(screenX + gp.titlesize/2 - thick/2, screenY - len, thick, len);
-                case "down"  -> g2.fillRect(screenX + gp.titlesize/2 - thick/2, screenY + gp.titlesize, thick, len);
-                case "left"  -> g2.fillRect(screenX - len, screenY + gp.titlesize/2 - thick/2, len, thick);
-                case "right" -> g2.fillRect(screenX + gp.titlesize, screenY + gp.titlesize/2 - thick/2, len, thick);
-            }
-            stapping = false;
-        }
     }
 }

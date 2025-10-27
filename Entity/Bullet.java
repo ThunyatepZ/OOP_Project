@@ -9,7 +9,7 @@ public class Bullet {
     public GamePanle gp;
 
     public int WorldX, WorldY;   // ตำแหน่ง world
-    public int speed = 8;        // ความเร็ว px/เฟรม
+    public int speed = 20;        // ความเร็ว px/เฟรม
     public int dx = 0, dy = 0;   // ทิศทางหน่วย (-1,0,1)
     public int size = 20;         // ขนาดกระสุน
     public boolean alive = true;

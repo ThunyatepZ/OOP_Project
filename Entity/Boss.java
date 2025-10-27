@@ -37,10 +37,10 @@ public class Boss extends Entity {
 
     public void getEnemyImage() {
         try {
-            up    = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ghost.png"));
-            down  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/GhostRight.png"));
-            left  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/GhostRight.png"));
-            right = ImageIO.read(getClass().getResourceAsStream("/acs/Character/GhostRight.png"));
+            up    = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Boss.png"));
+            down  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Boss.png"));
+            left  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Boss.png"));
+            right = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Boss.png"));
         } catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
@@ -106,7 +106,6 @@ public class Boss extends Entity {
     }
 
     private void checkHitByPlayerBullet(Rectangle bossBox) {
-        // ถ้าโค้ดเดิมของ Mos มี bullets ของผู้เล่นอยู่ที่ gp.bullets
         if (gp.bullets == null || gp.bullets.isEmpty()) return;
 
         for (int i = gp.bullets.size() - 1; i >= 0; i--) {

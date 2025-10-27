@@ -33,10 +33,10 @@ public class Enemy extends Entity {
 
     public void getEnemyImage() {
         try {
-            up    = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ghost.png"));
-            down  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/GhostRight.png"));
-            left  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/GhostRight.png"));
-            right = ImageIO.read(getClass().getResourceAsStream("/acs/Character/GhostRight.png"));
+            up    = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ene.png"));
+            down  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ene.png"));
+            left  = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ene.png"));
+            right = ImageIO.read(getClass().getResourceAsStream("/acs/Character/Ene.png"));
         } catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
@@ -45,26 +45,6 @@ public class Enemy extends Entity {
     @Override
     public void update() {
         if (!alive) return;
-
-        // ======= เช็กว่า "ศัตรู" อยู่บนจอไหม =======
-        // คำนวณตำแหน่งศัตรูบนหน้าจอ (อิงผู้เล่นเป็นกล้อง)
-        int screenX = WorldX - gp.player1.WorldX + gp.player1.screenX;
-        int screenY = WorldY - gp.player1.WorldY + gp.player1.screenY;
-
-        // ขอบเผื่อ (ศัตรูจะเริ่มทำงานก่อนเข้าเฟรมจริงนิดหน่อย) — ปรับได้
-        int margin = 0; // เช่น 64 ถ้าอยากให้เริ่มทำงานก่อนเข้าเฟรม
-
-        boolean onScreen =
-            (screenX + size >= -margin) &&
-            (screenX <= gp.Widthscreen + margin) &&
-            (screenY + size >= -margin) &&
-            (screenY <= gp.Hightscreen + margin);
-
-        if (!onScreen) {
-            // อยู่นอกจอ → ไม่อัปเดตการเคลื่อนที่/ไล่ตาม
-            return;
-        }
-        // ======= จบเช็กบนจอ =======
 
         int px = gp.player1.WorldX;
         int py = gp.player1.WorldY;
@@ -119,7 +99,7 @@ public class Enemy extends Entity {
         if (image != null) {
             g2.drawImage(image, screenX, screenY, gp.titlesize, gp.titlesize, null);
         } else {
-            g2.setColor(Color.RED);
+            g2.setColor(Color.BLACK);
             g2.fillRect(screenX, screenY, size, size);
         }
     }

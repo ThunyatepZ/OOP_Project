@@ -50,7 +50,7 @@ public class EnemyBullet {
         int screenY = WorldY - gp.player1.WorldY + gp.player1.screenY;
 
         // วาดเป็นวงกลมสีเหลืองให้ต่างจากกระสุนผู้เล่น
-        g2.setColor(Color.YELLOW);
+        g2.setColor(Color.GREEN);
         g2.fillOval(screenX - size/2, screenY - size/2, size, size);
     }
 }
