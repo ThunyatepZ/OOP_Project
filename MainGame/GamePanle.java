@@ -366,7 +366,7 @@ public class GamePanle extends JPanel implements Runnable {
             g2.fillRect(0, 0, Widthscreen, Hightscreen);
             g2.setColor(Color.white);
             g2.setFont(g2.getFont().deriveFont(36f));
-            String msg = "GAME OVER";
+            String msg = "GAME OVER you score: " + totalScore;
             java.awt.FontMetrics fm = g2.getFontMetrics();
             int msgX = (Widthscreen - fm.stringWidth(msg)) / 2;
             g2.drawString(msg, msgX, Hightscreen / 2);
